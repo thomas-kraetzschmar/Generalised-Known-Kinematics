@@ -15,7 +15,8 @@
 #
 # Offical code for the GKK method described in: https://arxiv.org/abs/2109.14455
 # 
-# CMS: center of mass system of the event ##########################################################################
+# CMS: center of mass system of the event 
+###########################################################################
 import sys
 import os
 import numpy as np
@@ -216,7 +217,7 @@ def goodPhiRegion(tag_theta_cms,
                   cosThetaPrim
                   ):
     '''
-    As explained in the paper reference above, due to smearing it is possible to reconstruct mother momenta which are unphysical. This function determined the physical mother momenta (good momenta). The Determination of good mother momenta can be reduced to determining those values of the phi angle which are physical, as described in the linked publication.
+    As explained in the paper referenced above, due to smearing it is possible to reconstruct mother momenta which are unphysical. This function determined the physical mother momenta (good momenta). The Determination of good mother momenta can be reduced to determining those values of the phi angle which are physical, as described in the linked publication.
 
     input:
     - thetaTag: Theta angle of the visible particle system of the tag side in the coordinate system of the detector
