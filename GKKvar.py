@@ -1,6 +1,6 @@
 ###########################################################################
-# Determination of the probability function of the X momentum in the tau
-# restframe
+# Determination of the probability function of the X momentum in e.g. the tau rest frame
+# 
 #
 #                  X +...
 #                  |
@@ -11,10 +11,9 @@
 # Contributors:
 # Thomas Kraetzschmar
 #
-# Use cases: Analysis of tau->e+invisible, mother particle mass measurement
+# Use cases: Analysis of tau->e+invisible, tau mass measurement
 #
-# last modified: April 2020 -> release-04-0Y-0X
-#
+# Offical code for the GKK method described in: https://arxiv.org/abs/2109.14455
 # 
 # ##########################################################################
 import sys
