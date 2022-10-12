@@ -15,7 +15,7 @@
 #
 # Offical code for the GKK method described in: https://arxiv.org/abs/2109.14455
 # 
-# ##########################################################################
+# CMS: center of mass system of the event ##########################################################################
 import sys
 import os
 import numpy as np
@@ -30,6 +30,19 @@ def cosTheta(visible_tag_particle_E_CMSlist,
              beamEnergy=10.58,
              particle_mass=1.776
              ):
+    '''
+    Calculate the cosine of the angle between the combination of the visible (daughter) particles' momentum and the mother particle's momentum 
+
+    input:
+    - visible_tag_particle_E_CMSlist: Energy of the visible particle system in the CMS 
+    - visible_tag_particle_InvMlist: invariant mass -- "rest mass" -- of the visible particle system in the CMS 
+    - visible_tag_particle_p_CMSlist: absolute value of the momentum for the visible particle system in the CMS 
+    - beamEnergy: collision energy of particles in the CMS
+    - particle_mass: rest mass of the mother particle under consideration, e.g. the tau particle.
+
+    output:
+    - cosTheta: Angle between the momentum of the mother particle under consideration and the moentum of the visible particles system.
+    '''
     abs_mom_mother_particle = np.sqrt(
         np.subtract(
             np.power(beamEnergy / 2, 2), 
@@ -61,6 +74,17 @@ def mother_particle_vec_list(thetaTag,
                              phiL, 
                              mother_particle_p=1
                              ):
+    '''
+    Generate list of mother particle vectors
+
+    input:
+    - thetaTag: Theta angle of the visible particle system in the coordinate system of the detector
+    - phiTag: Phi angle of the visible particle system in the coordinate system of the detector
+    - cosTheta_visible_tag_particle_momentum: Angle between the momentum of the mother particle under consideration and the momentum of the visible particles system.
+
+    output:
+    - three component list being the lists of the vector components of the mother vector
+    '''
     sinTheta_visible_tag_particle_momentum = np.sqrt(1 - cosTheta_visible_tag_particle_momentum**2)
     sinTheta = np.sin(thetaTag)
     cosTheta = np.cos(thetaTag)
@@ -114,18 +138,32 @@ def boostvec(tx,
              signal_4momentum_vec_CMS, 
              direction
              ):
-    ex, ey, ez, eE = signal_4momentum_vec_CMS
-    e4P = ROOT.TLorentzVector(
-        ex, ey, 
-        ez, eE
+    '''
+    Generate ROOT 4-vectors of the signal particle and the boost vector -- the direction and magnitude of the reference frame transformation.
+
+    input:
+    - tx: x component of the mother particle momentum
+    - ty: y component of the mother particle momentum
+    - tz: z component of the mother particle momentum
+    - EcmsHalf: Half of the beam energy -- the total energy of the mother particle
+    - signal_4momentum_vec_CMS: 4 momentum vector components of the signal particle
+    - direction: sign of the referencee frame transformation (this is need becaus in particle pair events we reconstruct the tag particl's momentum, which has the opposite flight direction than the signal particle) 
+
+    output:
+    - ROOT 4 vector object
+    '''
+    sig_x, sig_y, sig_z, sig_E = signal_4momentum_vec_CMS
+    sig_4mom = ROOT.TLorentzVector(
+        sig_x, sig_y, 
+        sig_z, sig_E
     )
     t = ROOT.TLorentzVector(
         tx, ty, 
         tz, EcmsHalf
     )
-    bv = t.BoostVector()
-    e4P.Boost(-1 * direction * bv)
-    return e4P.P()
+    boost_vector = t.BoostVector()
+    sig_4mom.Boost(-1 * direction * boost_vector)
+    return sig_4mom.P()
 
 def lorentzBoost(signal_4momentum_vec_CMS,
                  mother_particle_mom_CMS_list,
@@ -134,6 +172,20 @@ def lorentzBoost(signal_4momentum_vec_CMS,
                  particle_mass=1.776,
                  direction=-1
                  ):
+    '''
+    boost signal particle momentum into restframe of the mother particle using the reconstructed mother momenta
+
+    input:
+    - signal_4momentum_vec_CMS: 4 momentum of the signal particle
+    - mother_particle_mom_CMS_list: list of the cartesian components of the tag mother particle momenta
+    - norm=True: Indicater if mother_particle_mom_CMS_list is a normalised vector. Default is a normalised vector
+    - EcmsHalf==10.58 / 2 [GeV]: Half of the beam energy -- the total energy of the mother particle. Default is the beam energy (in GeV) of colliders with Upsilon 4S resonance beam energy
+    - particle_mass=1.776 [GeV/c^2]: rest mass of the mother particle under consideration, e.g. the tau particle. Default is the tau mass
+    - direction=-1: sign of the referencee frame transformation (this is need becaus in particle pair events we reconstruct the tag particl's momentum, which has the opposite flight direction than the signal particle). Default is the opposite direction as is the case in particle pair events.
+
+    output:
+    - list of the signal momentum for the rest frames of all reconstructed tag mother momenta
+    '''
     tx, ty, tz = mother_particle_mom_CMS_list
     if norm:
         tP = np.sqrt(EcmsHalf**2 - particle_mass**2)
@@ -163,6 +215,20 @@ def goodPhiRegion(tag_theta_cms,
                   cosTheta, 
                   cosThetaPrim
                   ):
+    '''
+    As explained in the paper reference above, due to smearing it is possible to reconstruct mother momenta which are unphysical. This function determined the physical mother momenta (good momenta). The Determination of good mother momenta can be reduced to determining those values of the phi angle which are physical, as described in the linked publication.
+
+    input:
+    - thetaTag: Theta angle of the visible particle system of the tag side in the coordinate system of the detector
+    - tag_phi_cms: Phi angle of the visible particle system of the tag in the coordinate system of the detector
+    - sig_theta_cms: Theta angle of the visible particle system of the signal side in the coordinate system of the detector
+    - sig_phi_cms: Phi angle of the visible particle system of the signal in the coordinate system of the detector
+    - cosTheta: Angle between the momentum of the mother particle of the tag particles and the momentum of the visible particles system.
+    - cosThetaPrim: Angle between the momentum of the mother particle of the signal particle(s) and the momentum of the visible particles system.
+
+    output:
+    - GoodSample: list of Boolian values indicating which mother momenta are physical
+    '''
     phiList = np.arange(
         0, 
         2 * np.pi, 
@@ -225,6 +291,15 @@ def goodPhiRegion(tag_theta_cms,
     return GoodSample
 
 def sampleInGoodPhiRegion(GoodSample):
+    '''
+    After determining the physical momenta region to retain the weight of every event equal, this function resamples the same number mother momenta for the physical momentum space
+
+    input:
+    - GoodSample: list of Boolian values indicating which mother momenta are physical
+
+    output:
+    - return a set of physical mother momenta
+    '''
     phiList = np.arange(
         0, 
         2 * np.pi, 
@@ -282,23 +357,47 @@ def sampleInGoodPhiRegion(GoodSample):
     return GoodMotherParticleAngles
 
 
-def KumulativeDensityFct(signal_4vec_CMS_list_x_j,
-                         signal_4vec_CMS_list_y_j,
-                         signal_4vec_CMS_list_z_j,
-                         signal_4vec_CMS_list_E_j,
-                         visible_tag_particle_CMS_list_theta_j,
-                         visible_tag_particle_CMS_list_phi_j,
-                         cosThetaList_j,
-                         signal_4vec_CMS_list_theta_j,
-                         signal_4vec_CMS_list_phi_j,
-                         cosThetaPrimeList_j,
-                         DirAddVariableValues,
-                         DirAddVariableKeys,
-                         norm=True,
-                         EcmsHalf=10.58 / 2,
-                         particle_mass=1.776,
-                         direction=-1,
-                         ):
+def DensityFct(signal_4vec_CMS_list_x_j,
+               signal_4vec_CMS_list_y_j,
+               signal_4vec_CMS_list_z_j,
+               signal_4vec_CMS_list_E_j,
+               visible_tag_particle_CMS_list_theta_j,
+               visible_tag_particle_CMS_list_phi_j,
+               cosThetaList_j,
+               signal_4vec_CMS_list_theta_j,
+               signal_4vec_CMS_list_phi_j,
+               cosThetaPrimeList_j,
+               DirAddVariableValues,
+               DirAddVariableKeys,
+               norm=True,
+               EcmsHalf=10.58 / 2,
+               particle_mass=1.776,
+               direction=-1,
+               ):
+    '''
+    Sample the density function of the signal momentum in the restframe of the mother for one event.
+
+    input:
+    - signal_4vec_CMS_list_x_j: x component of the signal momentum in the CMS frame for one event
+    - signal_4vec_CMS_list_y_j: y component of the signal momentum in the CMS frame for one event
+    - signal_4vec_CMS_list_z_j: z component of the signal momentum in the CMS frame for one event
+    - signal_4vec_CMS_list_E_j: Energy in the CMS frame of the signal for one event
+    - visible_tag_particle_CMS_list_theta_j: Theta angle of the visible particle system of the tag side in the coordinate system of the detector in the CMS frame for one event
+    - visible_tag_particle_CMS_list_phi_j: Phi angle of the visible particle system of the tag side in the coordinate system of the detector in the CMS frame for one event
+    - cosThetaList_j: Angle between the momentum of the mother particle of the tag particles and the momentum of the visible particles system for one event.
+    - signal_4vec_CMS_list_theta_j: Theta angle of the  particle of the signal side in the coordinate system of the detector in the CMS frame for one event
+    - signal_4vec_CMS_list_phi_j: Phi angle of the  particle of the signal side in the coordinate system of the detector in the CMS frame for one event
+    - cosThetaPrimeList_j: Angle between the momentum of the mother particle of the signal particles and the momentum of the (detected) particles for one event.
+    - DirAddVariableValues: Additional event property value 
+    - DirAddVariableKeys: Additional event property directory key
+    - norm=True: Indicater if mother_particle_mom_CMS_list is a normalised vector. Default is a normalised vector
+    - EcmsHalf==10.58 / 2 [GeV]: Half of the beam energy -- the total energy of the mother particle. Default is the beam energy (in GeV) of colliders with Upsilon 4S resonance beam energy
+    - particle_mass=1.776 [GeV/c^2]: rest mass of the mother particle under consideration, e.g. the tau particle. Default is the tau mass
+    - direction=-1: sign of the referencee frame transformation (this is need becaus in particle pair events we reconstruct the tag particl's momentum, which has the opposite flight direction than the signal particle). Default is the opposite direction as is the case in particle pair events.
+
+    output:
+    - gkkDfMc: list of the signal momentum in the restframe for all mother momenta -- the sampled density function of the signal particl's momentum in the restframe of the mother -- as a pandas dataframe. The pandas dataframe formate allows to propagate additional event properties for every entry.
+    '''
     signal_4momentum_vec_CMS = [
         signal_4vec_CMS_list_x_j,
         signal_4vec_CMS_list_y_j,
@@ -328,21 +427,41 @@ def KumulativeDensityFct(signal_4vec_CMS_list_x_j,
 
     return gkkDfMc
 
+def totalDensityFct(signal_4vec_CMS_list_x,
+                    signal_4vec_CMS_list_y,
+                    signal_4vec_CMS_list_z,
+                    signal_4vec_CMS_list_E,
+                    visible_tag_particle_CMS_list_theta,
+                    visible_tag_particle_CMS_list_phi,
+                    cosThetaList,
+                    cosThetaPrimeList,
+                    DirAddVariables,
+                    norm=True,
+                    EcmsHalf=10.58 / 2,
+                    particle_mass=1.776,
+                    direction=-1,
+                    ):
+    '''
+    Sample the density function of the signal momentum in the restframe of the mother for all events.
 
-def totalKumulativeDensityFct(signal_4vec_CMS_list_x,
-                              signal_4vec_CMS_list_y,
-                              signal_4vec_CMS_list_z,
-                              signal_4vec_CMS_list_E,
-                              visible_tag_particle_CMS_list_theta,
-                              visible_tag_particle_CMS_list_phi,
-                              cosThetaList,
-                              cosThetaPrimeList,
-                              DirAddVariables,
-                              norm=True,
-                              EcmsHalf=10.58 / 2,
-                              particle_mass=1.776,
-                              direction=-1,
-                              ):
+    input:
+    - signal_4vec_CMS_list_x: x component of the signal momentum in the CMS frame
+    - signal_4vec_CMS_list_y: y component of the signal momentum in the CMS frame
+    - signal_4vec_CMS_list_z: z component of the signal momentum in the CMS frame
+    - signal_4vec_CMS_list_E: Energy in the CMS frame of the signal
+    - visible_tag_particle_CMS_list_theta: Theta angle of the visible particle system of the tag side in the coordinate system of the detector in the CMS frame
+    - visible_tag_particle_CMS_list_phi: Phi angle of the visible particle system of the tag side in the coordinate system of the detector in the CMS frame
+    - cosThetaList: Angle between the momentum of the mother particle of the tag particles and the momentum of the visible particles system.
+    - cosThetaPrimeList: Angle between the momentum of the mother particle of the signal particles and the momentum of the (detected) particles.
+    - DirAddVariables: Additional event properties stored in a directory format
+    - norm=True: Indicater if mother_particle_mom_CMS_list is a normalised vector. Default is a normalised vector
+    - EcmsHalf==10.58 / 2 [GeV]: Half of the beam energy -- the total energy of the mother particle. Default is the beam energy (in GeV) of colliders with Upsilon 4S resonance beam energy
+    - particle_mass=1.776 [GeV/c^2]: rest mass of the mother particle under consideration, e.g. the tau particle. Default is the tau mass
+    - direction=-1: sign of the referencee frame transformation (this is need becaus in particle pair events we reconstruct the tag particl's momentum, which has the opposite flight direction than the signal particle). Default is the opposite direction as is the case in particle pair events.
+
+    output:
+    - gkkDf: list of the signal momentum in the restframe for all mother momenta -- the sampled density function of the signal particl's momentum in the restframe of the mother -- as a pandas dataframe. The pandas dataframe formate allows to propagate additional event properties for every entry.
+    '''
     signal_4vec_CMS_list_theta = np.arctan(
         np.divide(
             np.sqrt(
