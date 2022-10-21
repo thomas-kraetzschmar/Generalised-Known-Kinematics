@@ -28,7 +28,7 @@ import lorentzboost as lb
 def cosTheta(visible_tag_particle_E_CMSlist,
              visible_tag_particle_InvMlist,
              visible_tag_particle_p_CMSlist,
-             beamEnergy=10.58,
+             energy=10.58/2,
              particle_mass=1.776
              ):
     '''
@@ -38,7 +38,7 @@ def cosTheta(visible_tag_particle_E_CMSlist,
     - visible_tag_particle_E_CMSlist: Energy of the visible particle system in the CMS 
     - visible_tag_particle_InvMlist: invariant mass -- "rest mass" -- of the visible particle system in the CMS 
     - visible_tag_particle_p_CMSlist: absolute value of the momentum for the visible particle system in the CMS 
-    - beamEnergy: collision energy of particles in the CMS
+    - energy: particle energy in the CMS
     - particle_mass: rest mass of the mother particle under consideration, e.g. the tau particle.
 
     output:
@@ -46,13 +46,13 @@ def cosTheta(visible_tag_particle_E_CMSlist,
     '''
     abs_mom_mother_particle = np.sqrt(
         np.subtract(
-            np.power(beamEnergy / 2, 2), 
+            np.power(energy, 2), 
             np.power(particle_mass, 2)
         )
     )
     cosTheta = np.divide(
         np.subtract(
-            np.multiply(beamEnergy, visible_tag_particle_E_CMSlist),
+            np.multiply(energy * 2, visible_tag_particle_E_CMSlist),
             np.add(
                 np.power(particle_mass, 2), 
                 np.power(visible_tag_particle_InvMlist, 2)
