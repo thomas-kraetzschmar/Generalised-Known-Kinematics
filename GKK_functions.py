@@ -280,23 +280,23 @@ def sampleInGoodPhiRegion(GoodSample):
     return GoodMotherParticleAngles
 
 
-def DensityFct(signal_4vec_CMS_list_x_j,
-               signal_4vec_CMS_list_y_j,
-               signal_4vec_CMS_list_z_j,
-               signal_4vec_CMS_list_E_j,
-               visible_tag_particle_CMS_list_theta_j,
-               visible_tag_particle_CMS_list_phi_j,
-               cosThetaList_j,
-               signal_4vec_CMS_list_theta_j,
-               signal_4vec_CMS_list_phi_j,
-               cosThetaPrimeList_j,
-               DirAddVariableValues,
-               DirAddVariableKeys,
-               norm=True,
-               particle_energy=10.58 / 2,
-               particle_mass=1.776,
-               direction=-1,
-               ):
+def density_fct(signal_4vec_CMS_list_x_j,
+                signal_4vec_CMS_list_y_j,
+                signal_4vec_CMS_list_z_j,
+                signal_4vec_CMS_list_E_j,
+                visible_tag_particle_CMS_list_theta_j,
+                visible_tag_particle_CMS_list_phi_j,
+                cosThetaList_j,
+                signal_4vec_CMS_list_theta_j,
+                signal_4vec_CMS_list_phi_j,
+                cosThetaPrimeList_j,
+                DirAddVariableValues,
+                DirAddVariableKeys,
+                norm=True,
+                particle_energy=10.58 / 2,
+                particle_mass=1.776,
+                direction=-1,
+                ):
     '''
     Sample the density function of the signal momentum in the restframe of the mother for one event.
 
