@@ -30,7 +30,7 @@ def totalDensityFct(signal_4vec_CMS_list_x,
                     cosThetaPrimeList,
                     DirAddVariables,
                     norm=True,
-                    EcmsHalf=10.58 / 2,
+                    particle_energy=10.58 / 2,
                     particle_mass=1.776,
                     direction=-1,
                     ):
@@ -48,7 +48,7 @@ def totalDensityFct(signal_4vec_CMS_list_x,
     - cosThetaPrimeList: Angle between the momentum of the mother particle of the signal particles and the momentum of the (detected) particles.
     - DirAddVariables: Additional event properties stored in a directory format
     - norm=True: Indicater if mother_particle_mom_CMS_list is a normalised vector. Default is a normalised vector
-    - EcmsHalf==10.58 / 2 [GeV]: Half of the beam energy -- the total energy of the mother particle. Default is the beam energy (in GeV) of colliders with Upsilon 4S resonance beam energy
+    - particle_energy==10.58 / 2 [GeV]: Half of the beam energy -- the total energy of the mother particle. Default is the beam energy (in GeV) of colliders with Upsilon 4S resonance beam energy
     - particle_mass=1.776 [GeV/c^2]: rest mass of the mother particle under consideration, e.g. the tau particle. Default is the tau mass
     - direction=-1: sign of the referencee frame transformation (this is need becaus in particle pair events we reconstruct the tag particl's momentum, which has the opposite flight direction than the signal particle). Default is the opposite direction as is the case in particle pair events.
 
@@ -100,7 +100,7 @@ def totalDensityFct(signal_4vec_CMS_list_x,
                 [DirAddVariables[k][j] for k in DirAddVariables],
                 DirAddVariableKeys,
                 norm=norm,
-                EcmsHalf=EcmsHalf,
+                particle_energy=particle_energy,
                 particle_mass=particle_mass,
                 direction=direction): j
             for j in iterator

@@ -28,7 +28,7 @@ import lorentzboost as lb
 def cosTheta(visible_tag_particle_E_CMSlist,
              visible_tag_particle_InvMlist,
              visible_tag_particle_p_CMSlist,
-             energy=10.58/2,
+             particle_energy=10.58/2,
              particle_mass=1.776
              ):
     '''
@@ -38,7 +38,7 @@ def cosTheta(visible_tag_particle_E_CMSlist,
     - visible_tag_particle_E_CMSlist: Energy of the visible particle system in the CMS 
     - visible_tag_particle_InvMlist: invariant mass -- "rest mass" -- of the visible particle system in the CMS 
     - visible_tag_particle_p_CMSlist: absolute value of the momentum for the visible particle system in the CMS 
-    - energy: particle energy in the CMS
+    - particle_energy: particle energy in the CMS
     - particle_mass: rest mass of the mother particle under consideration, e.g. the tau particle.
 
     output:
@@ -46,13 +46,13 @@ def cosTheta(visible_tag_particle_E_CMSlist,
     '''
     abs_mom_mother_particle = np.sqrt(
         np.subtract(
-            np.power(energy, 2), 
+            np.power(particle_energy, 2), 
             np.power(particle_mass, 2)
         )
     )
     cosTheta = np.divide(
         np.subtract(
-            np.multiply(energy * 2, visible_tag_particle_E_CMSlist),
+            np.multiply(particle_energy * 2, visible_tag_particle_E_CMSlist),
             np.add(
                 np.power(particle_mass, 2), 
                 np.power(visible_tag_particle_InvMlist, 2)
@@ -293,7 +293,7 @@ def DensityFct(signal_4vec_CMS_list_x_j,
                DirAddVariableValues,
                DirAddVariableKeys,
                norm=True,
-               EcmsHalf=10.58 / 2,
+               particle_energy=10.58 / 2,
                particle_mass=1.776,
                direction=-1,
                ):
@@ -314,7 +314,7 @@ def DensityFct(signal_4vec_CMS_list_x_j,
     - DirAddVariableValues: Additional event property value 
     - DirAddVariableKeys: Additional event property directory key
     - norm=True: Indicater if mother_particle_mom_CMS_list is a normalised vector. Default is a normalised vector
-    - EcmsHalf==10.58 / 2 [GeV]: Half of the beam energy -- the total energy of the mother particle. Default is the beam energy (in GeV) of colliders with Upsilon 4S resonance beam energy
+    - particle_energy==10.58 / 2 [GeV]: Half of the beam energy -- the total energy of the mother particle. Default is the beam energy (in GeV) of colliders with Upsilon 4S resonance beam energy
     - particle_mass=1.776 [GeV/c^2]: rest mass of the mother particle under consideration, e.g. the tau particle. Default is the tau mass
     - direction=-1: sign of the referencee frame transformation (this is need becaus in particle pair events we reconstruct the tag particl's momentum, which has the opposite flight direction than the signal particle). Default is the opposite direction as is the case in particle pair events.
 
@@ -337,7 +337,7 @@ def DensityFct(signal_4vec_CMS_list_x_j,
         signal_4momentum_vec_CMS,
         n_mother_particle_mom_CMS_list,
         norm=norm,
-        EcmsHalf=EcmsHalf,
+        particle_energy=particle_energy,
         particle_mass=particle_mass,
         direction=direction,
     )
