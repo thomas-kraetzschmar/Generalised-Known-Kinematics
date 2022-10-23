@@ -18,6 +18,8 @@
 # CMS: center of mass system of the event 
 ###########################################################################
 import concurrent.futures
+import numpy as np
+import pandas as pd
 import GKK_functions as GKKfct
 
 def totalDensityFct(signal_4vec_CMS_list_x,
