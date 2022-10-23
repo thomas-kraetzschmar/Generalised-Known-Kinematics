@@ -18,7 +18,7 @@
 # CMS: center of mass system of the event 
 ###########################################################################
 import concurrent.futures
-import GKK_functions.py
+import GKK_functions as GKKfct
 
 def totalDensityFct(signal_4vec_CMS_list_x,
                     signal_4vec_CMS_list_y,
@@ -86,7 +86,7 @@ def totalDensityFct(signal_4vec_CMS_list_x,
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         future_u = {
             executor.submit(
-                KumulativeDensityFct,
+                GKKfct.KumulativeDensityFct,
                 signal_4vec_CMS_list_x[j],
                 signal_4vec_CMS_list_y[j],
                 signal_4vec_CMS_list_z[j],
