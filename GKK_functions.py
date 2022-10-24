@@ -333,7 +333,7 @@ def density_fct(signal_4vec_CMS_list_x_j,
     phiList = sampleInGoodPhiRegion(goodPhis)
     n_mother_particle_mom_CMS_list = mother_particle_vec_list(visible_tag_particle_CMS_list_theta_j, visible_tag_particle_CMS_list_phi_j,
                                  cosThetaList_j, phiList)
-    peTrue = lb.lorentzBoost(
+    peTrue = lb.lorentz_boost(
         signal_4momentum_vec_CMS,
         n_mother_particle_mom_CMS_list,
         norm=norm,
