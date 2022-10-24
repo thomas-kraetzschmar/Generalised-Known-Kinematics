@@ -30,7 +30,7 @@ def total_density_fct(signal_4vec_CMS_list_x,
                       visible_tag_particle_CMS_list_phi,
                       cosThetaList,
                       cosThetaPrimeList,
-                      DirAddVariables,
+                      add_variables_data_frame = {},
                       norm=True,
                       particle_energy=10.58 / 2,
                       particle_mass=1.776,
@@ -48,7 +48,7 @@ def total_density_fct(signal_4vec_CMS_list_x,
     - visible_tag_particle_CMS_list_phi: Phi angle of the visible particle system of the tag side in the coordinate system of the detector in the CMS frame
     - cosThetaList: Angle between the momentum of the mother particle of the tag particles and the momentum of the visible particles system.
     - cosThetaPrimeList: Angle between the momentum of the mother particle of the signal particles and the momentum of the (detected) particles.
-    - DirAddVariables: Additional event properties stored in a directory format
+    - add_variables_data_frame: Additional event properties stored in a directory format
     - norm=True: Indicater if mother_particle_mom_CMS_list is a normalised vector. Default is a normalised vector
     - particle_energy==10.58 / 2 [GeV]: Half of the beam energy -- the total energy of the mother particle. Default is the beam energy (in GeV) of colliders with Upsilon 4S resonance beam energy
     - particle_mass=1.776 [GeV/c^2]: rest mass of the mother particle under consideration, e.g. the tau particle. Default is the tau mass
@@ -99,8 +99,8 @@ def total_density_fct(signal_4vec_CMS_list_x,
                 signal_4vec_CMS_list_theta[j],
                 signal_4vec_CMS_list_phi[j],
                 cosThetaPrimeList[j],
-                [DirAddVariables[k][j] for k in DirAddVariables],
-                DirAddVariableKeys,
+                [add_variables_data_frame[k][j] for k in add_variables_data_frame],
+                list(add_variables_data_frame.keys()),
                 norm=norm,
                 particle_energy=particle_energy,
                 particle_mass=particle_mass,
