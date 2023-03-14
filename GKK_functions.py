@@ -241,10 +241,10 @@ def sampleInGoodPhiRegion(GoodSample, number_of_hypotheses=1000):
     try:
         if len(endPoint) == len(startpoint) and endPoint[0] < startpoint[0]:
             startpoint = np.insert(startpoint, 0, 0, axis=0)
-            endPoint = np.append(endPoint, 999)
+            endPoint = np.append(endPoint, number_of_hypotheses-1)
         elif (len(endPoint) != len(startpoint)) and (endPoint[-1] <
                                                      startpoint[-1]):
-            endPoint = np.append(endPoint, 999)
+            endPoint = np.append(endPoint, number_of_hypotheses-1)
 
         elif (len(endPoint) != len(startpoint)) and (endPoint[0] <
                                                      startpoint[0]):
@@ -255,7 +255,7 @@ def sampleInGoodPhiRegion(GoodSample, number_of_hypotheses=1000):
 
     except IndexError:
         startpoint = np.array([0])
-        endPoint = np.array([999])
+        endPoint = np.array([number_of_hypotheses-1])
 
     fractionL = np.subtract(endPoint, startpoint)
     fraction = np.sum(fractionL)
