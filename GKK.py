@@ -35,6 +35,7 @@ def total_density_fct(signal_4vec_CMS_list_x,
                       particle_energy=10.58 / 2,
                       particle_mass=1.776,
                       direction=-1,
+                      number_of_hypotheses=1000,
                       ):
     '''
     Sample the density function of the signal momentum in the restframe of the mother for all events.
@@ -53,6 +54,8 @@ def total_density_fct(signal_4vec_CMS_list_x,
     - particle_energy==10.58 / 2 [GeV]: Half of the beam energy -- the total energy of the mother particle. Default is the beam energy (in GeV) of colliders with Upsilon 4S resonance beam energy
     - particle_mass=1.776 [GeV/c^2]: rest mass of the mother particle under consideration, e.g. the tau particle. Default is the tau mass
     - direction=-1: sign of the referencee frame transformation (this is need becaus in particle pair events we reconstruct the tag particl's momentum, which has the opposite flight direction than the signal particle). Default is the opposite direction as is the case in particle pair events.
+    - number_of_hypotheses: Number of hypotheses generated
+
 
     output:
     - gkkDf: list of the signal momentum in the restframe for all mother momenta -- the sampled density function of the signal particl's momentum in the restframe of the mother -- as a pandas dataframe. The pandas dataframe formate allows to propagate additional event properties for every entry.
@@ -104,7 +107,9 @@ def total_density_fct(signal_4vec_CMS_list_x,
                 norm=norm,
                 particle_energy=particle_energy,
                 particle_mass=particle_mass,
-                direction=direction): j
+                direction=direction,
+                number_of_hypotheses=number_of_hypotheses,
+                ): j
             for j in iterator
         }
         signal_momentum_List = [
