@@ -136,7 +136,8 @@ def goodPhiRegion(tag_theta_cms,
                   sig_theta_cms, 
                   sig_phi_cms,
                   cosTheta, 
-                  cosThetaPrim
+                  cosThetaPrim,
+                  number_of_hypotheses = 1000
                   ):
     '''
     As explained in the paper referenced above, due to smearing it is possible to reconstruct mother momenta which are unphysical. This function determined the physical mother momenta (good momenta). The Determination of good mother momenta can be reduced to determining those values of the phi angle which are physical, as described in the linked publication.
@@ -148,6 +149,7 @@ def goodPhiRegion(tag_theta_cms,
     - sig_phi_cms: Phi angle of the visible particle system of the signal in the coordinate system of the detector
     - cosTheta: Angle between the momentum of the mother particle of the tag particles and the momentum of the visible particles system.
     - cosThetaPrim: Angle between the momentum of the mother particle of the signal particle(s) and the momentum of the visible particles system.
+    - number_of_hypotheses: Number of hypotheses generated
 
     output:
     - GoodSample: list of Boolian values indicating which mother momenta are physical
@@ -155,7 +157,7 @@ def goodPhiRegion(tag_theta_cms,
     phiList = np.arange(
         0, 
         2 * np.pi, 
-        2 * np.pi / 1000
+        2 * np.pi / number_of_hypotheses
     )
     tag_mother = mother_particle_vec_list(
         tag_theta_cms, 
@@ -213,7 +215,7 @@ def goodPhiRegion(tag_theta_cms,
 
     return GoodSample
 
-def sampleInGoodPhiRegion(GoodSample):
+def sampleInGoodPhiRegion(GoodSample, number_of_hypotheses=1000):
     '''
     After determining the physical momenta region to retain the weight of every event equal, this function resamples the same number mother momenta for the physical momentum space
 
@@ -226,14 +228,14 @@ def sampleInGoodPhiRegion(GoodSample):
     phiList = np.arange(
         0, 
         2 * np.pi, 
-        2 * np.pi / 1000
+        2 * np.pi / number_of_hypotheses
     )
     goodAngle = np.multiply(phiList, GoodSample)
     goodAngleGrad = goodAngle[1:] - goodAngle[:-1]
 
     # Find phi in which tag and signal mother particle regions intersect
     endPoint = np.where(goodAngleGrad < 0)[0]
-    startpoint = np.where(goodAngleGrad > 2 * np.pi / 1000 * 1.5)[0]
+    startpoint = np.where(goodAngleGrad > 2 * np.pi / number_of_hypotheses * 1.5)[0]
 
     # include start and enpoint of sample (0, 2pi)
     try:
@@ -257,7 +259,7 @@ def sampleInGoodPhiRegion(GoodSample):
 
     fractionL = np.subtract(endPoint, startpoint)
     fraction = np.sum(fractionL)
-    percent = np.multiply([round(i / fraction, 2) for i in fractionL], 1000)
+    percent = np.multiply([round(i / fraction, 2) for i in fractionL], number_of_hypotheses)
 
     GoodMotherParticleAngles = []
     ang_sample = []
