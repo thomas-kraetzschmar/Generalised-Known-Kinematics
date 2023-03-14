@@ -298,6 +298,7 @@ def density_fct(signal_4vec_CMS_list_x_j,
                 particle_energy=10.58 / 2,
                 particle_mass=1.776,
                 direction=-1,
+                number_of_hypotheses=1000
                 ):
     '''
     Sample the density function of the signal momentum in the restframe of the mother for one event.
@@ -329,12 +330,21 @@ def density_fct(signal_4vec_CMS_list_x_j,
         signal_4vec_CMS_list_z_j,
         signal_4vec_CMS_list_E_j,
     ]
-    goodPhis = goodPhiRegion(visible_tag_particle_CMS_list_theta_j, visible_tag_particle_CMS_list_phi_j,
-                             signal_4vec_CMS_list_theta_j, signal_4vec_CMS_list_phi_j,
-                             cosThetaList_j, cosThetaPrimeList_j)
-    phiList = sampleInGoodPhiRegion(goodPhis)
-    n_mother_particle_mom_CMS_list = mother_particle_vec_list(visible_tag_particle_CMS_list_theta_j, visible_tag_particle_CMS_list_phi_j,
-                                 cosThetaList_j, phiList)
+    goodPhis = goodPhiRegion(
+        visible_tag_particle_CMS_list_theta_j, 
+        visible_tag_particle_CMS_list_phi_j,
+        signal_4vec_CMS_list_theta_j, 
+        signal_4vec_CMS_list_phi_j,
+        cosThetaList_j, 
+        cosThetaPrimeList_j,
+        number_of_hypotheses=number_of_hypotheses    
+    )
+    phiList = sampleInGoodPhiRegion(goodPhis, number_of_hypotheses=number_of_hypotheses)
+    n_mother_particle_mom_CMS_list = mother_particle_vec_list(
+        visible_tag_particle_CMS_list_theta_j, 
+        visible_tag_particle_CMS_list_phi_j,
+        cosThetaList_j, phiList
+        )
     peTrue = lb.lorentz_boost(
         signal_4momentum_vec_CMS,
         n_mother_particle_mom_CMS_list,
